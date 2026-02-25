@@ -1,0 +1,509 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Teacher 📘</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      :root {
+        --bg: #0f1117;
+        --card: #1a1d27;
+        --card2: #22263a;
+        --border: #2e3350;
+        --accent: #6c63ff;
+        --accent2: #ff6584;
+        --text: #e8eaf6;
+        --muted: #7b82a8;
+        --success: #4caf50;
+        --error: #f44336;
+      }
+
+      body {
+        font-family: "Segoe UI", system-ui, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+      }
+
+      /* ── Header ── */
+      header {
+        background: linear-gradient(135deg, #6c63ff22, #ff658422);
+        border-bottom: 1px solid var(--border);
+        padding: 1.2rem 2rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+      header .logo {
+        font-size: 2rem;
+      }
+      header h1 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+      }
+      header span {
+        color: var(--accent);
+      }
+      .badge {
+        margin-left: auto;
+        background: var(--accent);
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+      }
+
+      /* ── Layout ── */
+      .container {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 2rem 1.5rem;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+      }
+      @media (max-width: 760px) {
+        .container {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* ── Cards ── */
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 1.5rem;
+      }
+      .card-title {
+        font-size: 0.85rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--muted);
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      /* ── Ask Form ── */
+      textarea {
+        width: 100%;
+        min-height: 120px;
+        background: var(--card2);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        color: var(--text);
+        font-size: 0.95rem;
+        padding: 0.9rem 1rem;
+        resize: vertical;
+        font-family: inherit;
+        transition: border-color 0.2s;
+        outline: none;
+      }
+      textarea:focus {
+        border-color: var(--accent);
+      }
+      textarea::placeholder {
+        color: var(--muted);
+      }
+
+      button {
+        margin-top: 1rem;
+        width: 100%;
+        padding: 0.85rem;
+        border: none;
+        border-radius: 12px;
+        background: linear-gradient(135deg, var(--accent), #8b5cf6);
+        color: white;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition:
+          opacity 0.2s,
+          transform 0.1s;
+      }
+      button:hover:not(:disabled) {
+        opacity: 0.9;
+      }
+      button:active:not(:disabled) {
+        transform: scale(0.98);
+      }
+      button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      /* ── Answer Box ── */
+      .answer-box {
+        background: var(--card2);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1rem 1.2rem;
+        margin-top: 1rem;
+        font-size: 0.95rem;
+        line-height: 1.65;
+        min-height: 80px;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+      .answer-box.placeholder {
+        color: var(--muted);
+        font-style: italic;
+      }
+
+      .meta-row {
+        display: flex;
+        gap: 0.75rem;
+        margin-top: 0.75rem;
+        flex-wrap: wrap;
+      }
+      .chip {
+        background: var(--card2);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 0.2rem 0.6rem;
+        font-size: 0.78rem;
+        color: var(--muted);
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+      }
+      .chip.green {
+        border-color: var(--success);
+        color: var(--success);
+      }
+      .chip.red {
+        border-color: var(--error);
+        color: var(--error);
+      }
+
+      /* ── Spinner ── */
+      .spinner {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border: 2px solid #ffffff44;
+        border-top-color: white;
+        border-radius: 50%;
+        animation: spin 0.7s linear infinite;
+        vertical-align: middle;
+        margin-right: 6px;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* ── History Panel ── */
+      .history-panel {
+        overflow-y: auto;
+        max-height: 680px;
+      }
+      .history-actions {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+      }
+      .history-actions button {
+        margin: 0;
+        flex: 1;
+        padding: 0.5rem;
+        font-size: 0.82rem;
+        background: var(--card2);
+        color: var(--text);
+        border: 1px solid var(--border);
+      }
+      .history-actions button.danger {
+        background: #ff65841a;
+        border-color: var(--accent2);
+        color: var(--accent2);
+      }
+
+      .history-item {
+        background: var(--card2);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+        cursor: pointer;
+        transition: border-color 0.2s;
+      }
+      .history-item:hover {
+        border-color: var(--accent);
+      }
+      .history-item .q {
+        font-weight: 600;
+        font-size: 0.9rem;
+        margin-bottom: 0.4rem;
+        color: var(--text);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .history-item .a {
+        font-size: 0.82rem;
+        color: var(--muted);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .history-item .ts {
+        font-size: 0.72rem;
+        color: #555;
+        margin-top: 0.5rem;
+      }
+
+      .empty-state {
+        text-align: center;
+        color: var(--muted);
+        padding: 2rem;
+        font-size: 0.9rem;
+      }
+      .empty-state .icon {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+      }
+
+      /* ── Toast ── */
+      .toast {
+        position: fixed;
+        bottom: 1.5rem;
+        right: 1.5rem;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 0.75rem 1.2rem;
+        font-size: 0.88rem;
+        box-shadow: 0 8px 32px #0008;
+        transform: translateY(0);
+        opacity: 1;
+        transition: all 0.3s;
+        z-index: 999;
+      }
+      .toast.hidden {
+        opacity: 0;
+        transform: translateY(20px);
+        pointer-events: none;
+      }
+      .toast.green {
+        border-color: var(--success);
+      }
+      .toast.red {
+        border-color: var(--error);
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="logo">📘</div>
+      <h1>AI <span>Teacher</span></h1>
+      <div class="badge">LangGraph + Groq</div>
+    </header>
+
+    <div class="container">
+      <!-- ── Left: Ask ── -->
+      <div>
+        <div class="card">
+          <div class="card-title">🎓 Ask a Question</div>
+          <textarea
+            id="questionInput"
+            placeholder="e.g. What is photosynthesis? How does gravity work?"
+          ></textarea>
+          <button id="askBtn" onclick="askQuestion()">
+            <span id="btnText">✨ Ask AI Teacher</span>
+          </button>
+        </div>
+
+        <div class="card" style="margin-top: 1.5rem">
+          <div class="card-title">💡 Answer</div>
+          <div class="answer-box placeholder" id="answerBox">
+            Your answer will appear here...
+          </div>
+          <div class="meta-row" id="metaRow" style="display: none">
+            <div class="chip" id="timingChip">⏱ 0ms</div>
+            <div class="chip green" id="sheetChip">📊 Saved to Sheet</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Right: History ── -->
+      <div class="card history-panel">
+        <div class="card-title">
+          🕓 Q&A History
+          <span
+            id="historyCount"
+            style="margin-left: auto; font-size: 0.8rem"
+          ></span>
+        </div>
+        <div class="history-actions">
+          <button onclick="loadHistory()">🔄 Refresh</button>
+          <button class="danger" onclick="clearHistory()">🗑 Clear All</button>
+        </div>
+        <div id="historyList">
+          <div class="empty-state">
+            <div class="icon">📭</div>
+            No history yet. Ask something!
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast hidden" id="toast"></div>
+
+    <script>
+      const API_BASE = "http://localhost:5000";
+
+      let loading = false;
+
+      async function askQuestion() {
+        const q = document.getElementById("questionInput").value.trim();
+        if (!q) return showToast("Please enter a question!", "red");
+        if (loading) return;
+
+        loading = true;
+        const btn = document.getElementById("askBtn");
+        const btnText = document.getElementById("btnText");
+        btn.disabled = true;
+        btnText.innerHTML = '<span class="spinner"></span>Thinking...';
+
+        const answerBox = document.getElementById("answerBox");
+        answerBox.textContent = "⏳ Asking AI Teacher...";
+        answerBox.classList.add("placeholder");
+        document.getElementById("metaRow").style.display = "none";
+
+        try {
+          const res = await fetch(`${API_BASE}/ask`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ question: q }),
+          });
+
+          if (!res.ok) {
+            const err = await res.json();
+            throw new Error(err.detail || "Server error");
+          }
+
+          const data = await res.json();
+
+          answerBox.textContent = data.answer;
+          answerBox.classList.remove("placeholder");
+
+          const metaRow = document.getElementById("metaRow");
+          metaRow.style.display = "flex";
+          document.getElementById("timingChip").textContent =
+            `⏱ ${data.duration_ms}ms`;
+
+          const sheetChip = document.getElementById("sheetChip");
+          if (data.saved_to_sheet) {
+            sheetChip.textContent = "📊 Saved to Google Sheet";
+            sheetChip.className = "chip green";
+          } else {
+            sheetChip.textContent = "⚠️ Sheet save failed";
+            sheetChip.className = "chip red";
+          }
+
+          showToast("Answer received! 🎉", "green");
+          loadHistory();
+        } catch (e) {
+          answerBox.textContent = `❌ Error: ${e.message}`;
+          answerBox.classList.add("placeholder");
+          showToast(e.message, "red");
+        } finally {
+          loading = false;
+          btn.disabled = false;
+          btnText.innerHTML = "✨ Ask AI Teacher";
+        }
+      }
+
+      async function loadHistory() {
+        const list = document.getElementById("historyList");
+        list.innerHTML = '<div class="empty-state">Loading...</div>';
+        try {
+          const res = await fetch(`${API_BASE}/history`);
+          const data = await res.json();
+          document.getElementById("historyCount").textContent = data.length
+            ? `(${data.length})`
+            : "";
+
+          if (!data.length) {
+            list.innerHTML =
+              '<div class="empty-state"><div class="icon">📭</div>No history yet. Ask something!</div>';
+            return;
+          }
+
+          list.innerHTML = data
+            .map(
+              (item) => `
+        <div class="history-item" onclick="fillQuestion('${escapeForAttr(item.question)}')">
+          <div class="q">Q: ${escapeHtml(item.question)}</div>
+          <div class="a">A: ${escapeHtml(item.answer)}</div>
+          <div class="ts">🕒 ${item.timestamp} ${item.duration_ms ? `· ⏱ ${item.duration_ms}ms` : ""}</div>
+        </div>
+      `,
+            )
+            .join("");
+        } catch (e) {
+          list.innerHTML = `<div class="empty-state">⚠️ Could not load history.<br><small>${e.message}</small></div>`;
+        }
+      }
+
+      async function clearHistory() {
+        if (!confirm("Clear all Q&A history from Google Sheets?")) return;
+        try {
+          await fetch(`${API_BASE}/history`, { method: "DELETE" });
+          showToast("History cleared!", "green");
+          loadHistory();
+        } catch (e) {
+          showToast("Failed to clear history", "red");
+        }
+      }
+
+      function fillQuestion(q) {
+        document.getElementById("questionInput").value = q;
+        document.getElementById("questionInput").focus();
+      }
+
+      function escapeHtml(str) {
+        return str
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+      function escapeForAttr(str) {
+        return str.replace(/'/g, "\\'").replace(/\n/g, " ");
+      }
+
+      function showToast(msg, type = "") {
+        const t = document.getElementById("toast");
+        t.textContent = msg;
+        t.className = `toast ${type}`;
+        setTimeout(() => {
+          t.className = `toast ${type} hidden`;
+        }, 3000);
+      }
+
+      // Allow Ctrl+Enter to submit
+      document
+        .getElementById("questionInput")
+        .addEventListener("keydown", (e) => {
+          if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) askQuestion();
+        });
+
+      // Load history on start
+      loadHistory();
+    </script>
+  </body>
+</html>
