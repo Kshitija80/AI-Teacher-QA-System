@@ -19,6 +19,24 @@ AI Teacher combines:
 
 ---
 
+## 📸 UI Preview
+
+### 🏠 Home Interface
+
+<img src="images/home.png" width="800">
+
+### 💬 AI Response Example
+
+<img src="images/chat.png" width="800">
+
+### 📜 Chat History
+
+<img src="images/history.png" width="800">
+
+### 🗄️ Supabase Cloud Database (AI_Teacher Table)
+
+<img src="images/supabase_table.png" width="800">
+
 ## ✨ Key Features
 
 - 💬 Ask any question in real-time
