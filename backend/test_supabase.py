@@ -20,7 +20,7 @@ CORS(app)   # Enable CORS for JS fetch
 
 llm = ChatGroq(
     model="llama-3.1-8b-instant",
-    api_key=("GROQ_API_KEY")
+    api_key=("your_api_key")
 )
 
 # ==============================
