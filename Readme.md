@@ -27,7 +27,7 @@ AI Teacher combines:
 
 ### 💬 AI Response Example
 
-<img src="images/chat.png" width="800">
+<img src="images/answer.png" width="800">
 
 ### 📜 Chat History
 
@@ -35,7 +35,7 @@ AI Teacher combines:
 
 ### 🗄️ Supabase Cloud Database (AI_Teacher Table)
 
-<img src="images/supabase_table.png" width="800">
+<img src="images/supabase.png" width="800">
 
 ## ✨ Key Features
 
