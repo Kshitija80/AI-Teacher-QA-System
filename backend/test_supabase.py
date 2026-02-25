@@ -27,8 +27,8 @@ llm = ChatGroq(
 # SUPABASE SETUP
 # ==============================
 
-SUPABASE_URL = ("SUPABASE_KEY")
-SUPABASE_KEY = ("SUPABASE_URL")
+SUPABASE_URL = "your_supabase_url"
+SUPABASE_KEY =  "your_supabase_key"
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # ==============================
