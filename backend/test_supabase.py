@@ -7,6 +7,7 @@ from datetime import datetime
 import time
 import webbrowser
 
+
 # ==============================
 # FLASK APP
 # ==============================
@@ -17,18 +18,22 @@ CORS(app)   # Enable CORS for JS fetch
 # ==============================
 # GROQ SETUP
 # ==============================
+from dotenv import load_dotenv
+import os
 
+load_dotenv()
 llm = ChatGroq(
     model="llama-3.1-8b-instant",
-    api_key=("your_api_key")
+    api_key=os.getenv("GROQ_API_KEY")
 )
-
 # ==============================
 # SUPABASE SETUP
 # ==============================
-
-SUPABASE_URL = "your_supabase_url"
-SUPABASE_KEY =  "your_supabase_key"
+from dotenv import load_dotenv
+import os
+load_dotenv()
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # ==============================
@@ -123,4 +128,6 @@ def clear_history():
 
 if __name__ == "__main__":
     webbrowser.open("http://127.0.0.1:5000")
-    app.run(debug=True)
+    #app.run(debug=True)
+    import os
+app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
